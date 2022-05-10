@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "task_tracker"
+version = "0.1.0"
+description = ""
+authors = ["Alexander Lebedev <lebedev.alex.dev@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.76.0"
+kafka-python = "^2.0.2"
+pymongo = "^4.1.1"
+uvicorn = "^0.17.6"
+motor = "^3.0.0"
+loguru = "^0.6.0"
+common = {path = "../libs/dist/common-0.1.0-py3-none-any.whl"}
+
+[tool.poetry.dev-dependencies]
+isort = "^5.10.1"
+black = "^22.3.0"
+
+[tool.black]
+line_length = 120
+skip_string_normalization = true
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.poetry.scripts]
+task_tracker = "task_tracker:main"
+task-tracker = "task_tracker:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
