@@ -1,4 +1,4 @@
-from enum import IntEnum, Enum
+from enum import Enum, IntEnum
 
 
 class TaskStatus(IntEnum):
@@ -7,6 +7,6 @@ class TaskStatus(IntEnum):
 
 
 class UserRole(Enum):
-    DEV = 'dev'
-    ADMIN = 'admin'
-    MANAGER = 'manager'
+    DEV = "dev"
+    ADMIN = "admin"
+    MANAGER = "manager"
