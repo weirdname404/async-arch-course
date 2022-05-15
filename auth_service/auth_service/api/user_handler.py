@@ -2,9 +2,15 @@ from typing import List
 
 from common.constants import UserRole
 from common.helpers import get_user_collection_from_req
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from motor.motor_asyncio import AsyncIOMotorCollection
 
+from ..kafka import (
+    send_user_created_event,
+    send_user_deleted_event,
+    send_user_role_changed_event,
+    send_user_updated_event,
+)
 from ..models.user_models import CreateUserModel, UpdateUserModel, UserModel, UserModelOut
 from ..security import create_user_safely, update_user_safely
 from . import auth
@@ -26,6 +32,12 @@ async def update_user_data(
     await update_user_safely(users, update_params, pub_id)
 
     if (user := await users.find_one({'pub_id': pub_id})) is not None:
+        if update_dict := update_params.get_public_dict():
+            update_dict |= {'pub_id': pub_id}
+            await send_user_updated_event(update_dict)
+            if update_params.role is not None:
+                await send_user_role_changed_event(update_dict)
+
         return user
 
     raise HTTPException(status_code=404)
@@ -37,7 +49,8 @@ async def create_user(
     _: UserModel = Depends(auth.get_current_active_admin),
     users: AsyncIOMotorCollection = Depends(get_user_collection_from_req),
 ):
-    insert_res, _ = await create_user_safely(users, create_params)
+    insert_res, user = await create_user_safely(users, create_params)
+    await send_user_created_event(user.get_public_dict())
     return await users.find_one({'_id': insert_res.inserted_id})
 
 
@@ -57,5 +70,19 @@ async def get_user(
 ):
     if (user := await users.find_one({'pub_id': pub_id})) is not None:
         return user
+
+    raise HTTPException(status_code=404)
+
+
+@router.delete("/{pub_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_user(
+    pub_id: str,
+    _: UserModel = Depends(auth.get_current_active_admin),
+    users: AsyncIOMotorCollection = Depends(get_user_collection_from_req),
+):
+    delete_result = await users.delete_one({'pub_id': pub_id})
+    if delete_result.deleted_count == 1:
+        await send_user_deleted_event({'pub_id': pub_id})
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     raise HTTPException(status_code=404)
