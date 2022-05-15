@@ -6,15 +6,12 @@ authors = ["Alexander Lebedev <lebedev.alex.dev@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.77.1"
 uvicorn = "^0.17.6"
 python-multipart = "^0.0.5"
-motor = "^3.0.0"
 pydantic = {extras = ["email"], version = "^1.9.0"}
-python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
-common = {path = "../libs/dist/common-0.1.0-py3-none-any.whl"}
 aiokafka = "^0.7.2"
+common = {path = "../libs/dist/common-0.1.0-py3-none-any.whl"}
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"

@@ -21,7 +21,7 @@ class CreateUserModel(BaseModel):
 class UserModel(CreateUserModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     pub_id: str = Field(default_factory=gen_uuid)
-    created_at: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    created_at: str = Field(default_factory=lambda: datetime.datetime.now().isoformat())
     is_active: bool = Field(default=True)
 
     class Config:
@@ -29,6 +29,9 @@ class UserModel(CreateUserModel):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: PyObjectId}
+
+    def get_public_dict(self) -> dict:
+        return self.dict(exclude={'id': True, 'password': True})
 
 
 class UpdateUserModel(BaseModel):
@@ -42,6 +45,9 @@ class UpdateUserModel(BaseModel):
     class Config:
         use_enum_values = True
         extra = 'forbid'
+
+    def get_public_dict(self) -> dict:
+        return self.dict(exclude={'id': True, 'password': True}, exclude_unset=True)
 
 
 class UserModelOut(BaseModel):
