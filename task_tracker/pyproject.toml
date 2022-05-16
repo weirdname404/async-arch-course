@@ -6,13 +6,12 @@ authors = ["Alexander Lebedev <lebedev.alex.dev@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.76.0"
 kafka-python = "^2.0.2"
-pymongo = "^4.1.1"
 uvicorn = "^0.17.6"
-motor = "^3.0.0"
 loguru = "^0.6.0"
 common = {path = "../libs/dist/common-0.1.0-py3-none-any.whl"}
+aiokafka = "^0.7.2"
+pydantic = {extras = ["email"], version = "^1.9.0"}
 
 [tool.poetry.dev-dependencies]
 isort = "^5.10.1"

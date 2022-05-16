@@ -1,12 +1,11 @@
-from dataclasses import dataclass
+HOST = "0.0.0.0"
+PORT = 4000
 
+MONGO_CONNECTION = "mongodb://127.0.0.1:27017"
+MONGO_DB_NAME = "tasks"
 
-@dataclass
-class Config:
-    host: str = '0.0.0.0'
-    port: int = 8080
-    mongo_connection_str: str = "mongodb://127.0.0.1:27017"
-    mongo_db_name: str = "tasks"
+SECRET_KEY = "83fac515077cf1c8108e8a26e1c1fa74a673a260317e7eb83549b51d3eb7d0f5"
+ALGORITHM = "HS256"
 
-
-config = Config()
+AUTH_URL = "http://0.0.0.0:3000/auth/login"
+KAFKA_URL = '0.0.0.0:9092'
