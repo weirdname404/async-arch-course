@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "auth_service"
+version = "0.1.0"
+description = ""
+authors = ["Alexander Lebedev <lebedev.alex.dev@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+uvicorn = "^0.17.6"
+python-multipart = "^0.0.5"
+pydantic = {extras = ["email"], version = "^1.9.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+aiokafka = "^0.7.2"
+common = {path = "../libs/dist/common-0.1.0-py3-none-any.whl"}
+
+[tool.poetry.dev-dependencies]
+black = "^22.3.0"
+isort = "^5.10.1"
+
+[tool.black]
+line_length = 120
+skip_string_normalization = true
+
+[tool.isort]
+profile = "black"
+line_length = 120
+
+[tool.poetry.scripts]
+auth = "auth_service.main:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

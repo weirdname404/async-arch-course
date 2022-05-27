@@ -1,0 +1,42 @@
+FROM docker.io/python:3.10-slim AS base
+FROM base AS builder
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+    curl git
+
+ENV POETRY_HOME=/poetry
+RUN mkdir /poetry && \
+    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+
+RUN ln -s /poetry/bin/poetry /bin/poetry && \
+    poetry --version
+
+RUN python -m venv /app
+
+COPY ./libs/pyproject.toml /libs/
+COPY ./libs/poetry.lock /libs/
+COPY ./libs/common/ /libs/common/
+WORKDIR /libs/
+RUN poetry install --no-root && \
+    poetry build -f wheel
+RUN poetry run pip3 freeze > requirements.txt && \
+    /app/bin/pip install -r requirements.txt && \
+    /app/bin/pip install -U /libs/dist/common-*.whl
+
+COPY ./task_tracker/poetry.lock /src/
+COPY ./task_tracker/pyproject.toml /src/
+COPY ./task_tracker/task_tracker /src/task_tracker/
+WORKDIR /src/
+RUN poetry install --no-dev --no-root && \
+    poetry build -f wheel
+RUN poetry run pip3 freeze > requirements.txt && \
+    /app/bin/pip install -r requirements.txt && \
+    /app/bin/pip install --no-deps -U /src/dist/task_tracker-*.whl
+
+ENTRYPOINT ["/app/bin/task-tracker"]
+
+FROM base
+
+COPY --from=builder /app /app
+
+ENTRYPOINT ["/app/bin/task-tracker"]
